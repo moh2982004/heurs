@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>التاريخ والوقت الحالي</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --text-color: #333;
+            --bg-color: #f9f9f9;
+            --card-bg: #ffffff;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            font-weight: bold;
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+            position: relative;
+            padding-bottom: 50px; /* مساحة للتذييل */
+        }
+        
+        .container:hover {
+            transform: translateY(-5px);
+        }
+        
+        .info-item {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.7);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        
+        .week {
+            color: var(--primary-color);
+            border-left: 5px solid var(--primary-color);
+        }
+        
+        .date {
+            color: var(--secondary-color);
+            border-left: 5px solid var(--secondary-color);
+        }
+        
+        .time {
+            color: var(--accent-color);
+            border-left: 5px solid var(--accent-color);
+        }
+        
+        .label {
+            display: block;
+            font-size: 0.8em;
+            margin-bottom: 5px;
+            color: #7f8c8d;
+        }
+        
+        .value {
+            font-size: 1.8em;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        
+        .footer {
+            position: absolute;
+            bottom: 15px;
+            left: 30px;
+            font-size: 0.8em;
+            color: #7f8c8d;
+            text-align: left;
+            direction: ltr;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                border-radius: 10px;
+                padding-bottom: 40px;
+            }
+            
+            .info-item {
+                margin: 15px 0;
+                padding: 12px;
+            }
+            
+            .value {
+                font-size: 1.5em;
+            }
+            
+            .footer {
+                left: 20px;
+                bottom: 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 15px;
+                padding-bottom: 35px;
+            }
+            
+            .value {
+                font-size: 1.3em;
+            }
+            
+            .label {
+                font-size: 0.7em;
+            }
+            
+            .footer {
+                font-size: 0.7em;
+                left: 15px;
+            }
+        }
+        
+        /* تحسينات للعرض في الوضع المظلم */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --text-color: #ecf0f1;
+                --bg-color: #2c3e50;
+                --card-bg: #34495e;
+            }
+            
+            .info-item {
+                background: rgba(52, 73, 94, 0.7);
+            }
+            
+            .footer {
+                color: #bdc3c7;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="info-item week">
+            <span class="label">رقم الأسبوع </span>
+            <span id="weekNumber" class="value"></span>
+        </div>
+        
+        <div class="info-item date">
+            <span class="label">التاريخ اليوم</span>
+            <span id="currentDate" class="value"></span>
+        </div>
+        
+        <div class="info-item time">
+            <span class="label">الوقت الحالي</span>
+            <span id="currentTime" class="value"></span>
+        </div>
+        
+        <div class="footer">
+            مع تحيات محمد العبد
+        </div>
+    </div>
+
+    <script>
+        function getWeekNumber(date) {
+            const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+            const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
+            return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+        }
+
+        function formatTime24h(date) {
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            const seconds = date.getSeconds().toString().padStart(2, '0');
+            return `${hours}:${minutes}:${seconds}`;
+        }
+
+        function updateDateTime() {
+            const now = new Date();
+            
+            // حساب رقم الأسبوع
+            const weekNumber = getWeekNumber(now);
+            
+            // عرض التاريخ باللغة العربية مع أرقام دولية
+            const optionsDate = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                numberingSystem: 'latn'
+            };
+            const currentDate = now.toLocaleDateString('ar-EG', optionsDate);
+            
+            // عرض الوقت بنظام 24 ساعة
+            const currentTime = formatTime24h(now);
+            
+            document.getElementById('weekNumber').textContent = weekNumber;
+            document.getElementById('currentDate').textContent = currentDate;
+            document.getElementById('currentTime').textContent = currentTime;
+        }
+        
+        // تحديث البيانات كل ثانية
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+    </script>
+</body>
+</html>
