@@ -43,13 +43,8 @@
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             text-align: center;
-            transition: transform 0.3s ease;
             position: relative;
-            padding-bottom: 50px; /* مساحة للتذييل */
-        }
-        
-        .container:hover {
-            transform: translateY(-5px);
+            padding-bottom: 50px;
         }
         
         .info-item {
@@ -142,23 +137,6 @@
                 left: 15px;
             }
         }
-        
-        /* تحسينات للعرض في الوضع المظلم */
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --text-color: #ecf0f1;
-                --bg-color: #2c3e50;
-                --card-bg: #34495e;
-            }
-            
-            .info-item {
-                background: rgba(52, 73, 94, 0.7);
-            }
-            
-            .footer {
-                color: #bdc3c7;
-            }
-        }
     </style>
 </head>
 <body>
@@ -171,6 +149,10 @@
         <div class="info-item date">
             <span class="label">التاريخ اليوم</span>
             <span id="currentDate" class="value"></span>
+            <br>
+            <span id="frenchDate" class="value" style="font-size: 1.4em;"></span>
+            <br>
+            <span id="hijriDate" class="value" style="font-size: 1.4em;"></span>
         </div>
         
         <div class="info-item time">
@@ -197,31 +179,57 @@
             return `${hours}:${minutes}:${seconds}`;
         }
 
+        function formatWithWesternNumbers(dateStr) {
+            return dateStr.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+        }
+
         function updateDateTime() {
             const now = new Date();
             
-            // حساب رقم الأسبوع
+            // رقم الأسبوع
             const weekNumber = getWeekNumber(now);
             
-            // عرض التاريخ باللغة العربية مع أرقام دولية
-            const optionsDate = { 
+            // التاريخ الميلادي العربي (بأرقام عالمية)
+            const optionsDateAr = { 
                 weekday: 'long', 
                 year: 'numeric', 
                 month: 'long', 
                 day: 'numeric',
                 numberingSystem: 'latn'
             };
-            const currentDate = now.toLocaleDateString('ar-EG', optionsDate);
+            const currentDate = now.toLocaleDateString('ar-EG', optionsDateAr);
             
-            // عرض الوقت بنظام 24 ساعة
+            // التاريخ الميلادي الفرنسي (بأرقام عالمية)
+            const optionsDateFr = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                numberingSystem: 'latn'
+            };
+            const frenchDate = now.toLocaleDateString('fr-FR', optionsDateFr);
+            
+            // التاريخ الهجري (بأرقام عالمية)
+            const optionsHijri = {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+                calendar: 'islamic',
+                numberingSystem: 'latn'
+            };
+            let hijriDate = now.toLocaleDateString('ar-EG', optionsHijri);
+            hijriDate = formatWithWesternNumbers(hijriDate);
+            
+            // الوقت
             const currentTime = formatTime24h(now);
             
             document.getElementById('weekNumber').textContent = weekNumber;
             document.getElementById('currentDate').textContent = currentDate;
+            document.getElementById('frenchDate').textContent = frenchDate;
+            document.getElementById('hijriDate').textContent = hijriDate;
             document.getElementById('currentTime').textContent = currentTime;
         }
         
-        // تحديث البيانات كل ثانية
         updateDateTime();
         setInterval(updateDateTime, 1000);
     </script>
