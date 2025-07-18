@@ -89,8 +89,21 @@
         }
         
         .value {
-            font-size: 1.8em;
             font-family: 'Courier New', Courier, monospace;
+        }
+        
+        /* تكبير حجم خط رقم الأسبوع */
+        #weekNumber {
+            font-size: 4em; /* تم زيادة الحجم من 1.8em إلى 2.2em */
+        }
+        
+        /* الحفاظ على أحجام الخطوط الأخرى */
+        #currentDate, #currentTime {
+            font-size: 1.8em;
+        }
+        
+        #frenchDate, #hijriDate {
+            font-size: 1.4em;
         }
         
         .footer {
@@ -115,8 +128,16 @@
                 padding: 12px;
             }
             
-            .value {
+            #weekNumber {
+                font-size: 2em;
+            }
+            
+            #currentDate, #currentTime {
                 font-size: 1.5em;
+            }
+            
+            #frenchDate, #hijriDate {
+                font-size: 1.3em;
             }
             
             .footer {
@@ -135,8 +156,16 @@
                 padding-bottom: 35px;
             }
             
-            .value {
+            #weekNumber {
+                font-size: 1.8em;
+            }
+            
+            #currentDate, #currentTime {
                 font-size: 1.3em;
+            }
+            
+            #frenchDate, #hijriDate {
+                font-size: 1.1em;
             }
             
             .label {
@@ -166,12 +195,9 @@
                 <span>Date d'aujourd'hui</span>
             </div>
             <span id="currentDate" class="value"></span>
-            <span id="frenchDate" class="value" style="font-size: 1.4em; display: block;"></span>
-<span id="hijriDate" class="value">22 محرم 1447</span>
+            <span id="frenchDate" class="value" style="display: block;"></span>
+            <span id="hijriDate" class="value">22 محرم 1447</span>
         </div>
-        
-       
-
         
         <div class="info-item time">
             <div class="dual-label">
