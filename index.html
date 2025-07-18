@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <title>التاريخ والوقت الحالي</title>
+    <title>التاريخ والوقت الحالي / Date et Heure Actuelle</title>
     <style>
         :root {
             --primary-color: #2c3e50;
             --secondary-color: #3498db;
             --accent-color: #e74c3c;
+            --hijri-color: #8e44ad;
             --text-color: #333;
             --bg-color: #f9f9f9;
             --card-bg: #ffffff;
@@ -70,11 +71,21 @@
             border-left: 5px solid var(--accent-color);
         }
         
+        .hijri {
+            color: var(--hijri-color);
+            border-left: 5px solid var(--hijri-color);
+        }
+        
         .label {
             display: block;
             font-size: 0.8em;
             margin-bottom: 5px;
             color: #7f8c8d;
+        }
+        
+        .dual-label {
+            display: flex;
+            justify-content: space-between;
         }
         
         .value {
@@ -142,26 +153,36 @@
 <body>
     <div class="container">
         <div class="info-item week">
-            <span class="label">رقم الأسبوع </span>
+            <div class="dual-label">
+                <span>رقم الأسبوع</span>
+                <span>Numéro de la semaine</span>
+            </div>
             <span id="weekNumber" class="value"></span>
         </div>
         
         <div class="info-item date">
-            <span class="label">التاريخ اليوم</span>
+            <div class="dual-label">
+                <span>التاريخ اليوم</span>
+                <span>Date d'aujourd'hui</span>
+            </div>
             <span id="currentDate" class="value"></span>
-            <br>
-            <span id="frenchDate" class="value" style="font-size: 1.4em;"></span>
-            <br>
-            <span id="hijriDate" class="value" style="font-size: 1.4em;"></span>
+            <span id="frenchDate" class="value" style="font-size: 1.4em; display: block;"></span>
+<span id="hijriDate" class="value">22 محرم 1447</span>
         </div>
         
+       
+
+        
         <div class="info-item time">
-            <span class="label">الوقت الحالي</span>
+            <div class="dual-label">
+                <span>الوقت الحالي</span>
+                <span>Heure actuelle</span>
+            </div>
             <span id="currentTime" class="value"></span>
         </div>
         
         <div class="footer">
-            مع تحيات محمد العبد
+            مع تحيات محمد العبد 
         </div>
     </div>
 
@@ -179,17 +200,13 @@
             return `${hours}:${minutes}:${seconds}`;
         }
 
-        function formatWithWesternNumbers(dateStr) {
-            return dateStr.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
-        }
-
         function updateDateTime() {
             const now = new Date();
             
             // رقم الأسبوع
             const weekNumber = getWeekNumber(now);
             
-            // التاريخ الميلادي العربي (بأرقام عالمية)
+            // التاريخ الميلادي العربي
             const optionsDateAr = { 
                 weekday: 'long', 
                 year: 'numeric', 
@@ -199,7 +216,7 @@
             };
             const currentDate = now.toLocaleDateString('ar-EG', optionsDateAr);
             
-            // التاريخ الميلادي الفرنسي (بأرقام عالمية)
+            // التاريخ الميلادي الفرنسي
             const optionsDateFr = { 
                 weekday: 'long', 
                 year: 'numeric', 
@@ -209,24 +226,12 @@
             };
             const frenchDate = now.toLocaleDateString('fr-FR', optionsDateFr);
             
-            // التاريخ الهجري (بأرقام عالمية)
-            const optionsHijri = {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric',
-                calendar: 'islamic',
-                numberingSystem: 'latn'
-            };
-            let hijriDate = now.toLocaleDateString('ar-EG', optionsHijri);
-            hijriDate = formatWithWesternNumbers(hijriDate);
-            
             // الوقت
             const currentTime = formatTime24h(now);
             
             document.getElementById('weekNumber').textContent = weekNumber;
             document.getElementById('currentDate').textContent = currentDate;
             document.getElementById('frenchDate').textContent = frenchDate;
-            document.getElementById('hijriDate').textContent = hijriDate;
             document.getElementById('currentTime').textContent = currentTime;
         }
         
