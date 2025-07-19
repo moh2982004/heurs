@@ -196,7 +196,6 @@
             </div>
             <span id="currentDate" class="value"></span>
             <span id="frenchDate" class="value" style="display: block;"></span>
-            <span id="hijriDate" class="value">22 محرم 1447</span>
         </div>
         
         <div class="info-item time">
@@ -212,57 +211,82 @@
         </div>
     </div>
 
-    <script>
-        function getWeekNumber(date) {
-            const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
-            const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
-            return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
-        }
+   <script>
+  function getSimpleMoroccanWeekNumber(date) {
+  const firstMonday = new Date(2025, 0, 6); // الإثنين 6 يناير 2025 (أول أسبوع حقيقي)
+  
+  // التأكد من أن الساعة لا تسبب مشكل الفرق (UTC)
+  firstMonday.setHours(0, 0, 0, 0);
+  date.setHours(0, 0, 0, 0);
 
-        function formatTime24h(date) {
-            const hours = date.getHours().toString().padStart(2, '0');
-            const minutes = date.getMinutes().toString().padStart(2, '0');
-            const seconds = date.getSeconds().toString().padStart(2, '0');
-            return `${hours}:${minutes}:${seconds}`;
-        }
+  const diffDays = Math.floor((date - firstMonday) / (1000 * 60 * 60 * 24));
 
-        function updateDateTime() {
-            const now = new Date();
-            
-            // رقم الأسبوع
-            const weekNumber = getWeekNumber(now);
-            
-            // التاريخ الميلادي العربي
-            const optionsDateAr = { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric',
-                numberingSystem: 'latn'
-            };
-            const currentDate = now.toLocaleDateString('ar-EG', optionsDateAr);
-            
-            // التاريخ الميلادي الفرنسي
-            const optionsDateFr = { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric',
-                numberingSystem: 'latn'
-            };
-            const frenchDate = now.toLocaleDateString('fr-FR', optionsDateFr);
-            
-            // الوقت
-            const currentTime = formatTime24h(now);
-            
-            document.getElementById('weekNumber').textContent = weekNumber;
-            document.getElementById('currentDate').textContent = currentDate;
-            document.getElementById('frenchDate').textContent = frenchDate;
-            document.getElementById('currentTime').textContent = currentTime;
-        }
-        
-        updateDateTime();
-        setInterval(updateDateTime, 1000);
-    </script>
+  if (diffDays < 0) return 1; // قبل أول إثنين نعتبره الأسبوع 1
+
+  return 2 + Math.floor(diffDays / 7); // الأسبوع 2 يبدأ من 6 يناير
+}
+
+
+
+    function formatTime24h(date) {
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        const seconds = date.getSeconds().toString().padStart(2, '0');
+        return `${hours}:${minutes}:${seconds}`;
+    }
+
+    function updateHijriDate() {
+        const today = new Date();
+        const day = today.getDate();
+        const month = today.getMonth() + 1;
+        const year = today.getFullYear();
+
+        fetch(`https://api.aladhan.com/v1/gToH?adjustment=0&day=${day}&month=${month}&year=${year}&region=MA`)
+            .then(response => response.json())
+            .then(data => {
+                const hijriDate = data.data.hijri.date + ' هـ';
+                document.getElementById('hijriDate').textContent = hijriDate;
+            })
+            .catch(error => {
+                document.getElementById('hijriDate').textContent = 'تعذر تحميل التاريخ الهجري';
+                console.error('خطأ في جلب التاريخ الهجري:', error);
+            });
+    }
+
+    function updateDateTime() {
+        const now = new Date();
+        const weekNumber = getSimpleMoroccanWeekNumber(now);
+
+        const optionsDateAr = { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric',
+            numberingSystem: 'latn'
+        };
+        const currentDate = now.toLocaleDateString('ar-EG', optionsDateAr);
+
+        const optionsDateFr = { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric',
+            numberingSystem: 'latn'
+        };
+        const frenchDate = now.toLocaleDateString('fr-FR', optionsDateFr);
+
+        const currentTime = formatTime24h(now);
+
+        document.getElementById('weekNumber').textContent = weekNumber;
+        document.getElementById('currentDate').textContent = currentDate;
+        document.getElementById('frenchDate').textContent = frenchDate;
+        document.getElementById('currentTime').textContent = currentTime;
+    }
+
+    updateDateTime();
+    updateHijriDate();
+    setInterval(updateDateTime, 1000);
+</script>
+
 </body>
 </html>
