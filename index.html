@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -177,7 +178,21 @@
                 left: 15px;
             }
         }
-    </style>
+    /* تأثير نبض للمربع */
+@keyframes pulseBackground {
+    0%, 100% {
+        background-color: rgba(255, 255, 255, 0.7);
+    }
+    50% {
+        background-color: #fff4e6; /* برتقالي فاتح جداً */
+    }
+}
+
+.time {
+    animation: pulseBackground 1s infinite;
+}
+
+</style>
 </head>
 <body>
     <div class="container">
@@ -212,21 +227,14 @@
     </div>
 
    <script>
-  function getSimpleMoroccanWeekNumber(date) {
-  const firstMonday = new Date(2025, 0, 6); // الإثنين 6 يناير 2025 (أول أسبوع حقيقي)
-  
-  // التأكد من أن الساعة لا تسبب مشكل الفرق (UTC)
-  firstMonday.setHours(0, 0, 0, 0);
-  date.setHours(0, 0, 0, 0);
-
-  const diffDays = Math.floor((date - firstMonday) / (1000 * 60 * 60 * 24));
-
-  if (diffDays < 0) return 1; // قبل أول إثنين نعتبره الأسبوع 1
-
-  return 2 + Math.floor(diffDays / 7); // الأسبوع 2 يبدأ من 6 يناير
-}
-
-
+    function getSimpleMoroccanWeekNumber(date) {
+        const firstMonday = new Date(2025, 0, 6);
+        firstMonday.setHours(0, 0, 0, 0);
+        date.setHours(0, 0, 0, 0);
+        const diffDays = Math.floor((date - firstMonday) / (1000 * 60 * 60 * 24));
+        if (diffDays < 0) return 1;
+        return 2 + Math.floor(diffDays / 7);
+    }
 
     function formatTime24h(date) {
         const hours = date.getHours().toString().padStart(2, '0');
@@ -254,27 +262,26 @@
     }
 
     function updateDateTime() {
-        const now = new Date();
-        const weekNumber = getSimpleMoroccanWeekNumber(now);
+        const now = new Date(); // ⚠️ هنا نعيد إنشاؤه في كل مرة
+        const weekNumber = getSimpleMoroccanWeekNumber(new Date(now)); // تأكد من إرسال نسخة جديدة
 
-        const optionsDateAr = { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
+        const optionsDateAr = {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
             day: 'numeric',
             numberingSystem: 'latn'
         };
         const currentDate = now.toLocaleDateString('ar-EG', optionsDateAr);
 
-        const optionsDateFr = { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
+        const optionsDateFr = {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
             day: 'numeric',
             numberingSystem: 'latn'
         };
         const frenchDate = now.toLocaleDateString('fr-FR', optionsDateFr);
-
         const currentTime = formatTime24h(now);
 
         document.getElementById('weekNumber').textContent = weekNumber;
@@ -283,10 +290,14 @@
         document.getElementById('currentTime').textContent = currentTime;
     }
 
-    updateDateTime();
-    updateHijriDate();
-    setInterval(updateDateTime, 1000);
+    // تأكد من تشغيل التحديثات بعد تحميل الصفحة
+    window.addEventListener('DOMContentLoaded', () => {
+        updateDateTime();
+        updateHijriDate();
+        setInterval(updateDateTime, 1000);
+    });
 </script>
+
 
 </body>
 </html>
